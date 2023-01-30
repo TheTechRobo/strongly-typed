@@ -36,17 +36,4 @@ def strongly_typed(func, raise_exception=True):
 
 strongly_typed_function = strongly_typed
 
-@strongly_typed_function
-def _hello(hello: str, goodbye: str):
-    print(f"{hello} world!")
-    time.sleep(1)
-    print(f"{goodbye} world!")
 
-@strongly_typed_function
-def _must_raise(func, etype, *args, **kwargs):
-    try:
-        func(*args, **kwargs)
-    except etype:
-        pass
-    else:
-        raise AssertionError("test failed!")

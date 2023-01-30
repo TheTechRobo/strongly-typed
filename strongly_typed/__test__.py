@@ -1,6 +1,21 @@
-from . import _hello, _must_raise
+from . import strongly_typed_function
 
 import logging, time
+
+@strongly_typed_function
+def _hello(hello: str, goodbye: str):
+    print(f"{hello} world!")
+    time.sleep(1)
+    print(f"{goodbye} world!")
+
+@strongly_typed_function
+def _must_raise(func, etype, *args, **kwargs):
+    try:
+        func(*args, **kwargs)
+    except etype:
+        pass
+    else:
+        raise AssertionError("test failed!")
 
 def test():
     hello = _hello
