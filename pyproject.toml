@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "strongly-typed"
-version = "1.0.1"
+version = "1.0.1-post3"
 description = "Python module to enforce strong typing"
 authors = ["TheTechRobo <thetechrobo@proton.me>"]
 license = "Apache-2.0"
@@ -14,3 +14,6 @@ python = "^3.8"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.urls]
+repository = "https://github.com/TheTechRobo/strongly-typed"
