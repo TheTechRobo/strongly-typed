@@ -1,0 +1,1 @@
+import strongly_typed.__test__
