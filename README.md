@@ -2,9 +2,10 @@
 
 This is a python decorator that allows you to type-check functions. Itll check the type signature of the function and, if the signature and the parameters given mismatch, will raise an exception.
 
-Time taken: About 2 hours
+## Inspiration
+I wanted to use this to make sure that software i was going to write was resilient for data integrity reasons. I've also learned a lot about decorators, etc.
 
-Usage:
+## Usage
 
 ```python
 from strongly_typed import strongly_typed
@@ -18,7 +19,13 @@ add(1, 2, "The answer is %s!")
 add(1, "e", 5) # raises an exception!
 ```
 
-Licence
+## Known issues
+`*args` and `**kwargs` are not tested at all. This is because I'm not sure how I'd implement that. (Plus, I don't think it's very common to annotate those.)
+
+## Contributing
+The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know.
+
+## Licence
 
 > Copyright 2023 TheTechRobo
 > Licensed under the Apache License, Version 2.0 (the "License");
