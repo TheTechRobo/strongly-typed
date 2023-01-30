@@ -24,6 +24,27 @@ add(1, "e", 5) # raises an exception!
 
 - Using "interchangeable" types (e.g. using an int when a float is required, or vice versa) will raise an exception. **This is by design.** The whole idea is to prevent python's weak typing from screwing things up. Type coercion isn't the only way it can do that, but it's one of them - and not always caught by linters.
 
+- Subclasses are not checked. So:
+
+```python
+class Hello:
+    def hi(self):
+        print("hi")
+
+class Subclass(Hello):
+    def __init__(self):
+        print("Init!")
+
+@strongly_typed.strongly_typed
+def run_hi(cls: Hello):
+    cls.hi()
+
+run_hi(Hello()) # OK
+run_hi(Subclass()) # Raises TypeError
+```
+
+There may be an optional feature to check if it's a subclass, rather than the absolute type. That's not a thing yet, though.
+
 ## Contributing
 The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know.
 
