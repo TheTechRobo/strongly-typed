@@ -20,7 +20,9 @@ add(1, "e", 5) # raises an exception!
 ```
 
 ## Known issues
-`*args` and `**kwargs` are not tested at all. This is because I'm not sure how I'd implement that. (Plus, I don't think it's very common to annotate those.)
+- `*args` and `**kwargs` are not tested at all. This is because I'm not sure how I'd implement that. (Plus, I don't think it's very common to annotate those.)
+
+- Using "interchangeable" types (e.g. using an int when a float is required, or vice versa) will raise an exception. **This is by design.** The whole idea is to prevent python's weak typing from screwing things up. Type coercion isn't the only way it can do that, but it's one of them - and not always caught by linters.
 
 ## Contributing
 The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know.
