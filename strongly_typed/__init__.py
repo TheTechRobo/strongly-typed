@@ -34,9 +34,7 @@ class StronglyTypedFunction:
             if type(types) == type:
                 return isinstance(value, types)
             # isinstance takes subclasses into accounts
-            new_list = []
-            for type_ in types:
-                new_list.append(self._clean_generic(type_))
+            new_list = map(lambda i : self._clean_generic(i), types)
             return isinstance(value, tuple(new_list))
         # if there's only one type
         if type(types) == type:
@@ -82,12 +80,18 @@ class StronglyTypedFunction:
         self.old(*args, **kwargs)
 
 
-def strongly_typed(func, *, raise_exception=True, allow_subclasses=True):
+class _decorator:
+    def __init__(self, raise_exception, allow_subclasses):
+        self.raise_exception = raise_exception
+        self.allow_subclasses = allow_subclasses
+    def __call__(self, func):
+        return StronglyTypedFunction(func, self.raise_exception, self.allow_subclasses)
+
+def strongly_typed(*, raise_exception=True, allow_subclasses=True):
     """
     Intended for use as a decorator.
     func (Callable): The function to modify. This is automatically done for you when using as a decorator.
     raise_exception (bool): If true, will raise TypeError on type mismatch. Otherwise, will use logging.warning on type mismatch.
     allow_subclasses (bool): If true, subclasses will be permitted. This was not the case in 1.0, but that violated Python's spec.
     """
-    return StronglyTypedFunction(func, raise_exception, allow_subclasses)
-
+    return _decorator(raise_exception=raise_exception, allow_subclasses=allow_subclasses)
