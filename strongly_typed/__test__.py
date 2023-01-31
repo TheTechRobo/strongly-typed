@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from . import strongly_typed_function
+from . import strongly_typed as strongly_typed_function
 
-import logging, time
+import logging, time, typing
 
 @strongly_typed_function
 def _hello(hello: str, goodbye: str):
@@ -21,23 +21,37 @@ def _hello(hello: str, goodbye: str):
     time.sleep(1)
     print(f"{goodbye} world!")
 
-@strongly_typed_function
+#@strongly_typed_function
 def _must_raise(func, etype, *args, **kwargs):
     try:
         func(*args, **kwargs)
     except etype:
         pass
     else:
-        raise AssertionError("test failed!")
+        raise AssertionError("test failed, did not raise!")
+
+@strongly_typed_function
+def _union_test(a: typing.Union[int, str], b: typing.Optional[list[None]]):
+    pass
+
+@strongly_typed_function
+def _any_test(a: typing.Any):
+    pass
 
 def test():
     hello = _hello
     hello("Starting tests,", "First one passed,")
+    _any_test(True)
+    _any_test(None)
+    _any_test("e")
     time.sleep(1)
+    _union_test("hi", [None])
+    _union_test(54, [])
     _must_raise(hello, TypeError, 2, "ji")
     _must_raise(hello, TypeError, 8, None)
     _must_raise(hello, TypeError, "hvs", goodbye=True)
     _must_raise(hello, TypeError, hello=_hello, goodbye=_hello)
+    _must_raise(_union_test, TypeError, None, [])
     print("So did the others, world!")
 
 test()
