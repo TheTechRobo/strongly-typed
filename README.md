@@ -26,45 +26,31 @@ add(1, 2, "The answer is %s!")
 add(1, "e", 5) # raises an exception!
 ```
 
+See `help(strongly_typed)` for details on decorator. Note that default behaviour changed in 2.0 - now, so as to not violate Python's spec, subclasses are permitted. To get back old behaviour, use `@strongly_typed(allow_subclasses=False)`.
+
 ## Known issues
 - `*args` and `**kwargs` are not tested at all. This is because I'm not sure how I'd implement that. (Plus, I don't think it's very common to annotate those.)
 
+- Return types are not tested. This may be fixed, and it might not be considered a breaking change.
+
+- Using nested parameterized types (e.g. `Union[dict[str, list[int]]]`) will always raise an exception on 1.0, and might raise an exception on 2.0. This will hopefully be fixed before 2.0 is released.
+
 - Using "interchangeable" types (e.g. using an int when a float is required, or vice versa) will raise an exception. **This is by design.** The whole idea is to prevent python's weak typing from screwing things up. Type coercion isn't the only way it can do that, but it's one of them - and not always caught by linters.
 
-- Subclasses are not checked. So:
-
-```python
-class Hello:
-    def hi(self):
-        print("hi")
-
-class Subclass(Hello):
-    def __init__(self):
-        print("Init!")
-
-@strongly_typed.strongly_typed
-def run_hi(cls: Hello):
-    cls.hi()
-
-run_hi(Hello()) # OK
-run_hi(Subclass()) # Raises TypeError
-```
-
-There may be an optional feature to check if it's a subclass, rather than the absolute type. That's not a thing yet, though.
-
 ## Contributing
-The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know.
+The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know. Pull requests are obviously welcome.
 
 ## Licence
 
-> Copyright 2023 TheTechRobo
-> Licensed under the Apache License, Version 2.0 (the "License");
-> you may not use this file except in compliance with the License.
-> You may obtain a copy of the License at
->    http://www.apache.org/licenses/LICENSE-2.0
-> Unless required by applicable law or agreed to in writing, software
-> distributed under the License is distributed on an "AS IS" BASIS,
-> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-> See the License for the specific language governing permissions and
-> limitations under the License.
-
+```
+Copyright 2023 TheTechRobo
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+   http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
