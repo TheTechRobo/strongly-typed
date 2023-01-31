@@ -87,11 +87,13 @@ class _decorator:
     def __call__(self, func):
         return StronglyTypedFunction(func, self.raise_exception, self.allow_subclasses)
 
-def strongly_typed(*, raise_exception=True, allow_subclasses=True):
+def strongly_typed(func=None, *, raise_exception=True, allow_subclasses=True):
     """
     Intended for use as a decorator.
     func (Callable): The function to modify. This is automatically done for you when using as a decorator.
     raise_exception (bool): If true, will raise TypeError on type mismatch. Otherwise, will use logging.warning on type mismatch.
     allow_subclasses (bool): If true, subclasses will be permitted. This was not the case in 1.0, but that violated Python's spec.
     """
+    if func:
+        return _decorator(raise_exception=raise_exception, allow_subclasses=allow_subclasses)(func)
     return _decorator(raise_exception=raise_exception, allow_subclasses=allow_subclasses)
