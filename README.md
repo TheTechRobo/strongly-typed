@@ -2,6 +2,13 @@
 
 This is a python decorator that allows you to type-check functions. Itll check the type signature of the function and, if the signature and the parameters given mismatch, will raise an exception.
 
+## Python versions
+The module currently supports only Python 3.9+ to keep the code nice and simple, and being able to use the latest typing features. Changing this is a breaking change and will have a Semver major version bump.
+
+1.0 officially supported 3.8+, but might have supported earlier versions.
+
+2.0 (and the master branch) will officially support 3.9+.
+
 ## Inspiration
 I wanted to use this to make sure that software i was going to write was resilient for data integrity reasons. I've also learned a lot about decorators, etc.
 
