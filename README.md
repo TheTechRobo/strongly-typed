@@ -35,7 +35,25 @@ See `help(strongly_typed)` for details on decorator. Note that default behaviour
 
 - Using nested parameterized types (e.g. `Union[dict[str, list[int]]]`) will always raise an exception on 1.0, and might raise an exception on 2.0. This will hopefully be fixed before 2.0 is released.
 
-- Using "interchangeable" types (e.g. using an int when a float is required, or vice versa) will raise an exception. **This is by design.** The whole idea is to prevent python's weak typing from screwing things up. Type coercion isn't the only way it can do that, but it's one of them - and not always caught by linters.
+- Using "interchangeable" types (e.g. using an int when a float is required, or vice versa) will raise an exception. **This is by design.** The whole idea is to prevent python's weak typing from screwing things up. Type coercion isn't the only way it can do that, but it's one of them - and not always caught by linters. `None` is also not allowed. To get around this, try using a `typing.Union` (or, for `None`, a `typing.Optional`).
+
+## Release notes
+GitHub releases will be created for future releases, but I'll provide some changelog here for people reading on PyPI.
+
+### 1.0
+Initial release
+
+### 1.0.1
+Set up PyPI, clarify stuff in README
+
+*some post releases were made to address issues and typos with documentation*
+
+### 2.0 (unreleased currently)
+- Add support for the typing module.
+- Fix keyword arguments.
+- Require decorator options to be passed as keyword arguments.
+- Use more sane defaults. (please reread docs)
+- Remove `strongly_typed_function` alias for the decorator.
 
 ## Contributing
 The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know. Pull requests are obviously welcome.
