@@ -19,7 +19,11 @@ import types
 import typing
 
 
-class _BuiltInTypeError(Exception):
+class _YouShouldNeverSeeThisError(Exception):
+    """
+    Raise this in a type-checking method to make the test immediately fail.
+    It's called this because this exception should never escape internal code.
+    """
     pass
 
 class TypeMismatchError(TypeError):
@@ -29,20 +33,25 @@ class TypeMismatchError(TypeError):
     pass
 
 class StronglyTypedFunction:
+    """
+    A function that is strongly typed.
+    This isn't so much a function as it is a callable - i.e., a class with a __call__ method.
+    Maybe this will subclass a function in 3.0, but I'm too lazy to do that right now. lol
+    """
     def __init__(self, old, r, accept_subclasses):
         self.old = old
         self.r = r
         self.a = accept_subclasses
     def _clean_generic(self, potential_generic):
         if type(potential_generic) == types.GenericAlias:
-            return typing.get_origin(potential_generic) # TODO: Recurse through the parameters. Raise _BuiltInTypeError to fail the test
+            return typing.get_origin(potential_generic) # TODO: Recurse through the parameters. Raise _YouShouldNeverSeeThisError to fail the test
         return potential_generic
     def _is_compatible(self, value, types: typing.Union[type, tuple[type]]):
         if self.a:
             if type(types) == type:
                 return isinstance(value, types)
             # isinstance takes subclasses into accounts
-            new_list = map(lambda i : self._clean_generic(i), types)
+            new_list = map(self._clean_generic, types)
             return isinstance(value, tuple(new_list))
         # if there's only one type
         if type(types) == type:
@@ -55,7 +64,7 @@ class StronglyTypedFunction:
     def _is_compatible_wrap(self, *args, **kwargs):
         try:
             return self._is_compatible(*args, **kwargs)
-        except _BuiltInTypeError:
+        except _YouShouldNeverSeeThisError:
             return False
     def _check_type(self, value, signature):
         if typing.get_origin(signature) is typing.Union:
@@ -72,7 +81,7 @@ class StronglyTypedFunction:
         sig = inspect.signature(self.old)
         positional_counter = 0
         for name, param in sig.parameters.items():
-            if param.kind == param.VAR_POSITIONAL or param.kind == param.VAR_KEYWORD:
+            if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
                 # not even gonna try...
                 continue
             try:
