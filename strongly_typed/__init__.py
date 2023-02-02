@@ -11,11 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import collections
 import inspect
 import logging
 import time
 import types
 import typing
+
 
 class _BuiltInTypeError(Exception):
     pass
@@ -52,6 +54,11 @@ class StronglyTypedFunction:
     def _check_type(self, value, signature):
         if typing.get_origin(signature) is typing.Union:
             return self._is_compatible_wrap(value, typing.get_args(signature))
+        if typing.get_origin(signature) is collections.abc.Callable:
+            return hasattr(value, "__call__")
+        if isinstance(signature, typing.TypeVar):
+            logging.warning("TypeVar type was passed. These are not checked by strongly-typed at the moment.")
+            return True
         if signature == typing.Any:
             return True
         return self._is_compatible_wrap(value, signature)
@@ -72,12 +79,17 @@ class StronglyTypedFunction:
                 positional_counter += 1
             # re param.empty: it's supposed to be used statically but this WorksTM
             if param.annotation != param.empty and not self._check_type(value, param.annotation):
-                msg = f"Invalid type for param {name} - expected {type(value)}, got {param.annotation}"
+                msg = f"Invalid type for param {name} - expected {param.annotation}, got {type(value)}"
                 if self.r:
                     raise TypeError(msg)
                 logging.warning(msg)
         # FIXME: check return value too
-        self.old(*args, **kwargs)
+        ret = self.old(*args, **kwargs)
+        if sig.return_annotation != inspect.Signature.empty and not self._check_type(ret, sig.return_annotation):
+            msg = f"Invalid type for return value - expected {sig.return_annotation}, got {type(ret)}"
+            if self.r:
+                raise TypeError(msg)
+            logging.warning(msg)
 
 
 class _decorator:

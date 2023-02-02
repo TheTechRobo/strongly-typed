@@ -38,6 +38,28 @@ def _union_test(a: typing.Union[int, str], b: typing.Optional[list[None]]):
 def _any_test(a: typing.Any):
     pass
 
+@strongly_typed_function
+def callable_test(a: typing.Callable):
+    pass
+
+@strongly_typed_function
+def return_fail() -> str:
+    return 2
+
+@strongly_typed_function
+def return_success() -> typing.Union[str, int]:
+    return 2
+
+@strongly_typed_function
+def return_success2() -> int:
+    return 4
+
+T = typing.TypeVar("T")
+
+@strongly_typed_function
+def typevar(x: T):
+    pass
+
 def test():
     hello = _hello
     hello("Starting tests,", "First one passed,")
@@ -47,6 +69,12 @@ def test():
     time.sleep(1)
     _union_test("hi", [None])
     _union_test(54, [])
+    typevar(None)
+    callable_test(lambda : None)
+    return_success()
+    return_success2()
+    _must_raise(callable_test, TypeError, None)
+    _must_raise(return_fail, TypeError)
     _must_raise(hello, TypeError, 2, "ji")
     _must_raise(hello, TypeError, 8, None)
     _must_raise(hello, TypeError, "hvs", goodbye=True)
