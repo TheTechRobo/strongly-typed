@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from . import strongly_typed as strongly_typed_function
+from . import TypeMismatchError
 
 import logging, time, typing
 
@@ -75,7 +76,7 @@ def test():
     return_success2()
     _must_raise(callable_test, TypeError, None)
     _must_raise(return_fail, TypeError)
-    _must_raise(hello, TypeError, 2, "ji")
+    _must_raise(hello, TypeMismatchError, 2, "ji") # gotta also test the subclass that's actually raised!
     _must_raise(hello, TypeError, 8, None)
     _must_raise(hello, TypeError, "hvs", goodbye=True)
     _must_raise(hello, TypeError, hello=_hello, goodbye=_hello)

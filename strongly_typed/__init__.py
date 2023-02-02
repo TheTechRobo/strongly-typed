@@ -22,6 +22,12 @@ import typing
 class _BuiltInTypeError(Exception):
     pass
 
+class TypeMismatchError(TypeError):
+    """
+    Raised by strongly-typed when a type signature mismatch occurs.
+    """
+    pass
+
 class StronglyTypedFunction:
     def __init__(self, old, r, accept_subclasses):
         self.old = old
@@ -81,14 +87,14 @@ class StronglyTypedFunction:
             if param.annotation != param.empty and not self._check_type(value, param.annotation):
                 msg = f"Invalid type for param {name} - expected {param.annotation}, got {type(value)}"
                 if self.r:
-                    raise TypeError(msg)
+                    raise TypeMismatchError(msg)
                 logging.warning(msg)
         # FIXME: check return value too
         ret = self.old(*args, **kwargs)
         if sig.return_annotation != inspect.Signature.empty and not self._check_type(ret, sig.return_annotation):
             msg = f"Invalid type for return value - expected {sig.return_annotation}, got {type(ret)}"
             if self.r:
-                raise TypeError(msg)
+                raise TypeMismatchError(msg)
             logging.warning(msg)
 
 
@@ -103,7 +109,7 @@ def strongly_typed(func=None, *, raise_exception=True, allow_subclasses=True):
     """
     Intended for use as a decorator.
     func (Callable): The function to modify. This is automatically done for you when using as a decorator.
-    raise_exception (bool): If true, will raise TypeError on type mismatch. Otherwise, will use logging.warning on type mismatch.
+    raise_exception (bool): If true, will raise TypeMismatchError on type mismatch. Otherwise, will use logging.warning on type mismatch.
     allow_subclasses (bool): If true, subclasses will be permitted. This was not the case in 1.0, but that violated Python's spec.
     """
     if func:
