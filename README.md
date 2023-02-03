@@ -33,6 +33,23 @@ See `help(strongly_typed)` for details on decorator. Note that default behaviour
 
 - Using nested parameterized types (e.g. `Union[dict[str, list[int]]]`) will always raise an exception on 1.0, and might raise an exception on 2.0. This will hopefully be fixed before 2.0 is released.
 
+- `NewType`s are checked, but only the parent. So:
+
+```python
+Type = NewType("Type", int)
+
+@strongly_typed
+def test(e: Type):
+    pass
+    
+test(Type(5)) # OK
+test(5) # OK - according to Python's spec, should not be
+test(Type("this is a string")) # Raises exception, as it should
+test("this is another string") # Raises exception, as it should
+```
+
+This may be fixed without it being considered a breaking change.
+
 - Using "interchangeable" types (e.g. using an int when a float is required, or vice versa) will raise an exception. **This is by design.** The whole idea is to prevent python's weak typing from screwing things up. Type coercion isn't the only way it can do that, but it's one of them - and not always caught by linters. `None` is also not allowed. To get around this, try using a `typing.Union` (or, for `None`, a `typing.Optional`).
 
 ## Release notes
