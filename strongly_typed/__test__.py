@@ -68,6 +68,7 @@ def typevar(x: T):
     pass
 
 def test():
+    goodbye(nt1(5))
     hello = _hello
     hello("Starting tests,", "First one passed,")
     _any_test(True)
@@ -80,6 +81,8 @@ def test():
     callable_test(lambda : None)
     return_success()
     return_success2()
+    #_must_reaise(goodbye, TypeError, 5) # currently does not raise even though it should
+    _must_raise(goodbye, TypeError, "str lol")
     _must_raise(callable_test, TypeError, None)
     _must_raise(return_fail, TypeError)
     _must_raise(hello, TypeMismatchError, 2, "ji") # gotta also test the subclass that's actually raised!
