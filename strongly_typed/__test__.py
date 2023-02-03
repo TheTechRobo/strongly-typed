@@ -22,6 +22,12 @@ def _hello(hello: str, goodbye: str):
     time.sleep(1)
     print(f"{goodbye} world!")
 
+
+nt1 = typing.NewType("nt1", int)
+@strongly_typed_function
+def goodbye(hello: nt1):
+    pass
+
 #@strongly_typed_function
 def _must_raise(func, etype, *args, **kwargs):
     try:

@@ -74,6 +74,18 @@ class StronglyTypedFunction:
         if isinstance(signature, typing.TypeVar):
             logging.warning("TypeVar type was passed. These are not checked by strongly-typed at the moment.")
             return True
+        if isinstance(signature, (types.FunctionType, StronglyTypedFunction)):
+            if hasattr(signature, "__supertype__"):
+                # (Regarding the signature = signature.__supertype__ line...)
+                # FIXME: NO, THAT'S WRONG! I'm not even sure if there's a decent way to check this at runtime.
+                # The problem is that a NewType("example", int) should be allowed as an int (which this does),
+                # but not vice versa (an int should not be allowed as a NewType("example", int)!
+                # However, this will catch SOME issues, and shouldnt have any false positives, so it's fine "for now".
+                signature = signature.__supertype__
+                logging.warning("NewType was passed. The checks for NewType are not perfect and may not see any problem in some cases!.")
+                return True
+            else:
+                raise TypeError("a function was passed as a type argument - this will cause a crash")
         if signature == typing.Any:
             return True
         return self._is_compatible_wrap(value, signature)
