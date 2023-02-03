@@ -110,7 +110,6 @@ class StronglyTypedFunction:
                 if self.r:
                     raise TypeMismatchError(msg)
                 logging.warning(msg)
-        # FIXME: check return value too
         ret = self.old(*args, **kwargs)
         if sig.return_annotation != inspect.Signature.empty and not self._check_type(ret, sig.return_annotation):
             name = getattr(sig.return_annotation, "__name__", str(type(sig.return_annotation)))
