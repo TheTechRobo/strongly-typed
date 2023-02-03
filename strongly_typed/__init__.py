@@ -81,9 +81,8 @@ class StronglyTypedFunction:
                 # The problem is that a NewType("example", int) should be allowed as an int (which this does),
                 # but not vice versa (an int should not be allowed as a NewType("example", int)!
                 # However, this will catch SOME issues, and shouldnt have any false positives, so it's fine "for now".
-                signature = signature.__supertype__
                 logging.warning("NewType was passed. The checks for NewType are not perfect and may not see any problem in some cases!.")
-                return True
+                return self._check_type(value, signature.__supertype__) # This is also not perfect: typing.Any etc should not be used in NewType
             else:
                 raise TypeError("a function was passed as a type argument - this will cause a crash")
         if signature == typing.Any:
@@ -106,14 +105,16 @@ class StronglyTypedFunction:
                 positional_counter += 1
             # re param.empty: it's supposed to be used statically but this WorksTM
             if param.annotation != param.empty and not self._check_type(value, param.annotation):
-                msg = f"Invalid type for param {name} - expected {param.annotation}, got {type(value)}"
+                namee = getattr(param.annotation, "__name__", str(type(param.annotation)))
+                msg = f"Invalid type for param {name} - expected {namee}, got {type(value)}"
                 if self.r:
                     raise TypeMismatchError(msg)
                 logging.warning(msg)
         # FIXME: check return value too
         ret = self.old(*args, **kwargs)
         if sig.return_annotation != inspect.Signature.empty and not self._check_type(ret, sig.return_annotation):
-            msg = f"Invalid type for return value - expected {sig.return_annotation}, got {type(ret)}"
+            name = getattr(sig.return_annotation, "__name__", str(type(sig.return_annotation)))
+            msg = f"Invalid type for return value - expected {name}, got {type(ret)}"
             if self.r:
                 raise TypeMismatchError(msg)
             logging.warning(msg)
