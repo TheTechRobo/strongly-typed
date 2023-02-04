@@ -67,7 +67,12 @@ T = typing.TypeVar("T")
 def typevar(x: T):
     pass
 
+@strongly_typed_function
+def list_text(x: list[str]):
+    pass
+
 def test():
+    list_text(["hi", "bye"])
     goodbye(nt1(5))
     hello = _hello
     hello("Starting tests,", "First one passed,")
@@ -81,15 +86,17 @@ def test():
     callable_test(lambda : None)
     return_success()
     return_success2()
+    _must_raise(list_text, TypeMismatchError, "str")
+    #_must_raise(list_text, TypeMismatchError, [5, 2]) # currently does not raise even though it should
     #_must_reaise(goodbye, TypeError, 5) # currently does not raise even though it should
-    _must_raise(goodbye, TypeError, "str lol")
-    _must_raise(callable_test, TypeError, None)
-    _must_raise(return_fail, TypeError)
+    _must_raise(goodbye, TypeMismatchError, "str lol")
+    _must_raise(callable_test, TypeMismatchError, None)
+    _must_raise(return_fail, TypeMismatchError)
     _must_raise(hello, TypeMismatchError, 2, "ji") # gotta also test the subclass that's actually raised!
-    _must_raise(hello, TypeError, 8, None)
-    _must_raise(hello, TypeError, "hvs", goodbye=True)
-    _must_raise(hello, TypeError, hello=_hello, goodbye=_hello)
-    _must_raise(_union_test, TypeError, None, [])
+    _must_raise(hello, TypeMismatchError, 8, None)
+    _must_raise(hello, TypeMismatchError, "hvs", goodbye=True)
+    _must_raise(hello, TypeMismatchError, hello=_hello, goodbye=_hello)
+    _must_raise(_union_test, TypeMismatchError, None, [])
     print("So did the others, world!")
 
 test()

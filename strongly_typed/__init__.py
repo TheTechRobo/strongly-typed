@@ -43,21 +43,24 @@ class StronglyTypedFunction:
         self.r = r
         self.a = accept_subclasses
     def _clean_generic(self, potential_generic):
-        if type(potential_generic) == types.GenericAlias:
+        if type(potential_generic) is types.GenericAlias:
+            logging.warning("GenericAlias was found. Only a shallow check will be performed.")
             return typing.get_origin(potential_generic) # TODO: Recurse through the parameters. Raise _YouShouldNeverSeeThisError to fail the test
         return potential_generic
-    def _is_compatible(self, value, types: typing.Union[type, tuple[type]]):
+    def _is_compatible(self, value, types_to_check: typing.Union[type, tuple[type]]):
         if self.a:
-            if type(types) == type:
-                return isinstance(value, types)
+            if type(types_to_check) is type:
+                return isinstance(value, types_to_check)
+            if type(types_to_check) is types.GenericAlias:
+                types_to_check = [types_to_check]
             # isinstance takes subclasses into accounts
-            new_list = map(self._clean_generic, types)
+            new_list = map(self._clean_generic, types_to_check)
             return isinstance(value, tuple(new_list))
         # if there's only one type
-        if type(types) == type:
-            return types == type(value)
+        if type(types_to_check) == type:
+            return types_to_check == type(value)
         # otherwise, there's multiple. for this we have to iterate over the types manually
-        for type_ in types:
+        for type_ in types_to_check:
             if type(value) == type_:
                 return True
         return False
