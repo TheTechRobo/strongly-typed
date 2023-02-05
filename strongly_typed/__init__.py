@@ -18,7 +18,7 @@ import logging
 import time
 import types
 import typing
-
+import functools
 
 class _YouShouldNeverSeeThisError(Exception):
     """

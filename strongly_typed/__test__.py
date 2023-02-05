@@ -86,6 +86,8 @@ class LetsTestAClass:
     def run2(e: int):
         pass
 
+class Subclass(LetsTestAClass): pass
+
 def test_the_class():
     obj = LetsTestAClass()
     obj.run(5)
@@ -96,9 +98,27 @@ def test_the_class():
     _must_raise(LetsTestAClass.run1, TypeMismatchError, "string")
     LetsTestAClass.run2(3)
 
+@strongly_typed_function(raise_exception=False)
+def no_raise(e: int):
+    pass
+
+@strongly_typed_function(allow_subclasses=False)
+def no_subclasses(x: LetsTestAClass):
+    pass
+
+@strongly_typed_function
+def yes_subclasses(x: LetsTestAClass):
+    pass
+
 def test():
     list_text(["hi", "bye"])
     goodbye(nt1(5))
+    no_subclasses(LetsTestAClass())
+    _must_raise(no_subclasses, TypeMismatchError, Subclass())
+    yes_subclasses(LetsTestAClass())
+    yes_subclasses(Subclass())
+    no_raise(5)
+    no_raise(None)
     hello = _hello
     hello("Starting tests,", "First one passed,")
     test_the_class()
