@@ -110,6 +110,8 @@ def no_subclasses(x: LetsTestAClass):
 def yes_subclasses(x: LetsTestAClass):
     pass
 
+assert yes_subclasses.is_strongly_typed == True
+
 def test():
     list_text(["hi", "bye"])
     goodbye(nt1(5))

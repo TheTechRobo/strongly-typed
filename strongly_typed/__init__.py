@@ -140,5 +140,6 @@ def strongly_typed(func=None, *, raise_exception=True, allow_subclasses=True):
         def run(*args, **kwargs):
             return c(*args, **kwargs)
         run.__name__ = getattr(func, "__name__", run.__name__)
+        run.is_strongly_typed = True
         return run
     return functools.partial(strongly_typed, raise_exception=raise_exception, allow_subclasses=allow_subclasses)
