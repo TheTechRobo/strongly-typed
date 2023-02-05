@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import sys
 import collections
 import inspect
 import logging
@@ -68,6 +69,10 @@ class StronglyTypedFunction(typing.Callable):
             return self._is_compatible(*args, **kwargs)
         except _YouShouldNeverSeeThisError:
             return False
+    def _get_callable_signature_list(self):
+        if sys.version_info[1] == 9: # python 3.9 compatibility
+            return types.FunctionType, StronglyTypedFunction # NewType is not a class in Python 3.9
+        return types.FunctionType, StronglyTypedFunction, typing.NewType
     def _check_type(self, value, signature):
         if typing.get_origin(signature) is typing.Union:
             return self._is_compatible_wrap(value, typing.get_args(signature))
@@ -76,7 +81,7 @@ class StronglyTypedFunction(typing.Callable):
         if isinstance(signature, typing.TypeVar):
             logging.warning("TypeVar type was passed. These are not checked by strongly-typed at the moment.")
             return True
-        if isinstance(signature, (types.FunctionType, StronglyTypedFunction)):
+        if isinstance(signature, self._get_callable_signature_list()):
             if hasattr(signature, "__supertype__"):
                 # (Regarding the signature = signature.__supertype__ line...)
                 # FIXME: NO, THAT'S WRONG! I'm not even sure if there's a decent way to check this at runtime.
