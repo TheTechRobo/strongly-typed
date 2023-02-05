@@ -70,6 +70,7 @@ Set up PyPI, clarify stuff in README
 - Use more sane defaults. (please reread docs)
 - Remove `strongly_typed_function` alias for the decorator.
 - Check return values.
+- Add support for class methods and instance methods.
 
 ## Contributing
 The code is probably terrible. Please help me fix it! If you have any suggestions, please let me know. Pull requests are obviously welcome.
