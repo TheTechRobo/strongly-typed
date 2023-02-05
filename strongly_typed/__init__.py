@@ -36,7 +36,6 @@ class StronglyTypedFunction(typing.Callable):
     """
     A function that is strongly typed.
     This isn't so much a function as it is a callable - i.e., a class with a __call__ method.
-    Maybe this will subclass a function in 3.0, but I'm too lazy to do that right now. lol
     """
     def __init__(self, old, r, accept_subclasses):
         self.old = old
