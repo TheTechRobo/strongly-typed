@@ -32,7 +32,7 @@ class TypeMismatchError(TypeError):
     """
     pass
 
-class StronglyTypedFunction:
+class StronglyTypedFunction(typing.Callable):
     """
     A function that is strongly typed.
     This isn't so much a function as it is a callable - i.e., a class with a __call__ method.
@@ -101,7 +101,10 @@ class StronglyTypedFunction:
             try:
                 value = kwargs[name]
             except KeyError: # if it's positional
-                value = args[positional_counter]
+                try:
+                    value = args[positional_counter]
+                except IndexError:
+                    raise TypeMismatchError(f"argument {name} appears to be missing")
                 # positional args will always be in order
                 # so we just have to increment a counter
                 # we can't just increment it every iteration, though, since then keyword args will increment it
@@ -121,14 +124,6 @@ class StronglyTypedFunction:
                 raise TypeMismatchError(msg)
             logging.warning(msg)
 
-
-class _decorator:
-    def __init__(self, raise_exception, allow_subclasses):
-        self.raise_exception = raise_exception
-        self.allow_subclasses = allow_subclasses
-    def __call__(self, func):
-        return StronglyTypedFunction(func, self.raise_exception, self.allow_subclasses)
-
 def strongly_typed(func=None, *, raise_exception=True, allow_subclasses=True):
     """
     Intended for use as a decorator.
@@ -137,5 +132,9 @@ def strongly_typed(func=None, *, raise_exception=True, allow_subclasses=True):
     allow_subclasses (bool): If true, subclasses will be permitted. This was not the case in 1.0, but that violated Python's spec.
     """
     if func:
-        return _decorator(raise_exception=raise_exception, allow_subclasses=allow_subclasses)(func)
-    return _decorator(raise_exception=raise_exception, allow_subclasses=allow_subclasses)
+        c = StronglyTypedFunction(func, raise_exception, allow_subclasses)
+        def run(*args, **kwargs):
+            return c(*args, **kwargs)
+        run.__name__ = getattr(func, "__name__", run.__name__)
+        return run
+    return functools.partial(strongly_typed, raise_exception=raise_exception, allow_subclasses=allow_subclasses)

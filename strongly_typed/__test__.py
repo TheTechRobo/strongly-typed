@@ -71,11 +71,37 @@ def typevar(x: T):
 def list_text(x: list[str]):
     pass
 
+class LetsTestAClass:
+    @strongly_typed_function
+    def run(self, e: int):
+        pass
+
+    @classmethod
+    @strongly_typed_function
+    def run1(cls, e: int):
+        pass
+
+    @staticmethod
+    @strongly_typed_function
+    def run2(e: int):
+        pass
+
+def test_the_class():
+    obj = LetsTestAClass()
+    obj.run(5)
+    obj.run2(5)
+    _must_raise(obj.run, TypeMismatchError, "string!")
+
+    LetsTestAClass.run1(5)
+    _must_raise(LetsTestAClass.run1, TypeMismatchError, "string")
+    LetsTestAClass.run2(3)
+
 def test():
     list_text(["hi", "bye"])
     goodbye(nt1(5))
     hello = _hello
     hello("Starting tests,", "First one passed,")
+    test_the_class()
     _any_test(True)
     _any_test(None)
     _any_test("e")
